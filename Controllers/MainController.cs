@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using StackExchange.Redis;
 // using System;
 // using System.Collections.Generic;
 
@@ -8,12 +9,19 @@ namespace tasksAPI.Controllers
     [ApiController]
     public class MainController : ControllerBase
     {
+        private readonly IConnectionMultiplexer _redis;
+
+        public MainController(IConnectionMultiplexer redis)
+        {
+            _redis = redis;
+        }
         // GET: api/MiControlador
         [HttpGet]
-        public string[] GetAllTasks()
+        public ActionResult<string> GetAllTasks()
         {
-            return new string[]{"Tarea 1","Tarea 2", "Tarea 3"};
+            IDatabase db = _redis.GetDatabase();
+            string value = db.StringGet("Hola");
+            return Ok(value);
         }
-
     }
 }
